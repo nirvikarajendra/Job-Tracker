@@ -40,11 +40,11 @@ Authenticate with GitHub OAuth and manage your job search in one place.
    npm install
 
 3. Create a .env file in the root folder
-   MONGODB_URI=your_mongodb_connection_string
-   GITHUB_CLIENT_ID=your_github_client_id
-   GITHUB_CLIENT_SECRET=your_github_client_secret
-   SESSION_SECRET=your_session_secret
-   CALLBACK_URL=http://localhost:8000/auth/github/callback
+   - MONGODB_URI=your_mongodb_connection_string
+   - GITHUB_CLIENT_ID=your_github_client_id
+   - GITHUB_CLIENT_SECRET=your_github_client_secret
+   - SESSION_SECRET=your_session_secret
+   - CALLBACK_URL=http://localhost:8000/auth/github/callback
 
 4. Run the app
    npm start
