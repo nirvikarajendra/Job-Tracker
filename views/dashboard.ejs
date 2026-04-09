@@ -17,13 +17,38 @@
 
         <!-- Action Buttons -->
         <div class="mb-4 d-flex gap-2">
-            <!-- Add Job Button -->
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#jobModal">
                 Add Job
             </button>
-
-            <!-- Logout Button -->
             <a href="/auth/logout" class="btn btn-dark">Logout</a>
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="d-flex gap-3 mb-4">
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="form-control w-50" 
+                placeholder="Search by company or role...">
+            
+            <select id="statusFilter" class="form-select w-25">
+                <option value="All">All Status</option>
+                <option value="Applied">Applied</option>
+                <option value="Interview">Interview</option>
+                <option value="Offer">Offer</option>
+                <option value="Rejected">Rejected</option>
+            </select>
+
+            <button class="btn btn-outline-secondary" onclick="clearFilters()">Clear</button>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="d-flex gap-3 mb-4">
+            <span class="badge bg-secondary fs-6">Total: <span id="totalCount">0</span></span>
+            <span class="badge bg-primary fs-6">Applied: <span id="appliedCount">0</span></span>
+            <span class="badge bg-warning text-dark fs-6">Interview: <span id="interviewCount">0</span></span>
+            <span class="badge bg-success fs-6">Offer: <span id="offerCount">0</span></span>
+            <span class="badge bg-danger fs-6">Rejected: <span id="rejectedCount">0</span></span>
         </div>
 
         <!-- Jobs Table -->
@@ -40,17 +65,31 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="jobsTableBody">
                     <% if(jobs.length === 0) { %>
                         <tr>
-                            <td colspan="5" class="text-center">No jobs added yet.</td>
+                            <td colspan="6" class="text-center">No jobs added yet.</td>
                         </tr>
                     <% } else { %>
                         <% jobs.forEach(job => { %>
-                            <tr>
+                            <tr 
+                                class="job-row" 
+                                data-company="<%= job.company.toLowerCase() %>"
+                                data-role="<%= job.role.toLowerCase() %>"
+                                data-status="<%= job.status %>">
                                 <td><%= job.company %></td>
                                 <td><%= job.role %></td>
-                                <td><%= job.status %></td>
+                                <td>
+                                    <% if(job.status === 'Offer') { %>
+                                        <span class="badge bg-success"><%= job.status %></span>
+                                    <% } else if(job.status === 'Rejected') { %>
+                                        <span class="badge bg-danger"><%= job.status %></span>
+                                    <% } else if(job.status === 'Interview') { %>
+                                        <span class="badge bg-warning text-dark"><%= job.status %></span>
+                                    <% } else { %>
+                                        <span class="badge bg-primary"><%= job.status %></span>
+                                    <% } %>
+                                </td>
                                 <td>
                                     <% if(job.repoId) { %>
                                         <a href="<%= job.repoId.htmlUrl %>" target="_blank"><%= job.repoId.name %></a>
@@ -62,20 +101,25 @@
                                     <% } %>
                                 </td>
                                 <td>
-                                  <button 
-                                      class="btn btn-sm btn-warning"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#updateModal"
-                                      data-id="<%= job._id %>"
-                                      data-status="<%= job.status %>">
-                                      Edit
-                                  </button>
-                              </td>
+                                    <button 
+                                        class="btn btn-sm btn-warning"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#updateModal"
+                                        data-id="<%= job._id %>"
+                                        data-status="<%= job.status %>">
+                                        Edit
+                                    </button>
+                                </td>
                             </tr>
                         <% }) %>
                     <% } %>
                 </tbody>
             </table>
+
+            <!-- No results message -->
+            <div id="noResults" class="text-center text-muted py-3" style="display:none;">
+                No jobs match your search.
+            </div>
         </div>
 
         <!-- Add Job Modal -->
@@ -88,42 +132,35 @@
                     </div>
                     <div class="modal-body">
                         <form method="POST" action="/repo/job/create">
-
                             <div class="mb-3">
                                 <label for="Company" class="form-label">Company</label>
                                 <input type="text" class="form-control" id="Company" name="company" required>
                             </div>
-
                             <div class="mb-3">
                                 <label for="Role" class="form-label">Role</label>
                                 <input type="text" class="form-control" id="Role" name="role" required>
                             </div>
-
                             <div class="mb-3">
                                 <label for="Location" class="form-label">Location</label>
                                 <input type="text" class="form-control" id="Location" name="location">
                             </div>
-
                             <div class="mb-3">
                                 <label for="jobLink" class="form-label">Job Link</label>
                                 <input type="text" class="form-control" id="jobLink" name="jobLink">
                             </div>
-
                             <div class="mb-3">
-                              <label for="status" class="form-label">Status</label>
-                              <select class="form-control" id="status" name="status">
-                                  <option value="Applied">Applied</option>
-                                  <option value="Interview">Interview</option>
-                                  <option value="Rejected">Rejected</option>
-                                  <option value="Offer">Offer</option>
-                              </select>
-                          </div>
-
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-control" id="status" name="status">
+                                    <option value="Applied">Applied</option>
+                                    <option value="Interview">Interview</option>
+                                    <option value="Rejected">Rejected</option>
+                                    <option value="Offer">Offer</option>
+                                </select>
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label">Applied Date</label>
                                 <input type="date" name="appliedDate" class="form-control" required>
                             </div>
-
                             <div class="mb-3">
                                 <label class="form-label">Select GitHub Repo</label>
                                 <select name="repoId" class="form-select" required>
@@ -132,7 +169,6 @@
                                     <% }) %>
                                 </select>
                             </div>
-
                             <button type="submit" class="btn btn-primary w-100">Submit</button>
                         </form>
                     </div>
@@ -140,38 +176,36 @@
             </div>
         </div>
 
-    </div>
-
-    <!--Update Model-->
-    <div class="modal fade" id="updateModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <form method="POST" action="/repo/job/update">
-            <div class="modal-header">
-              <h5 class="modal-title">Update Status</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <!-- Update Modal -->
+        <div class="modal fade" id="updateModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="POST" action="/repo/job/update">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Update Status</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="jobId" id="jobId">
+                            <label class="form-label">Status</label>
+                            <select name="status" id="jobStatus" class="form-select">
+                                <option>Applied</option>
+                                <option>Interview</option>
+                                <option>Rejected</option>
+                                <option>Offer</option>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Update</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-    
-            <div class="modal-body">
-              <input type="hidden" name="jobId" id="jobId">
-    
-              <label class="form-label">Status</label>
-              <select name="status" id="jobStatus" class="form-select">
-                <option>Applied</option>
-                <option>Interview</option>
-                <option>Rejected</option>
-                <option>Offer</option>
-              </select>
-            </div>
-    
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-success">Update</button>
-            </div>
-          </form>
         </div>
-      </div>
+
     </div>
 
     <%- include("partials/scripts") %>
+
 </body>
 </html>

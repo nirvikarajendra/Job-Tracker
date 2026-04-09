@@ -21,3 +21,75 @@
       });
     });
 </script>
+
+<script>
+  // ── populate update modal ──
+  document.getElementById('updateModal').addEventListener('show.bs.modal', function(event) {
+      const button = event.relatedTarget;
+      document.getElementById('jobId').value = button.getAttribute('data-id');
+      document.getElementById('jobStatus').value = button.getAttribute('data-status');
+  });
+
+  // ── filter + search logic ──
+  function filterJobs() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+      const rows = document.querySelectorAll('.job-row');
+
+      let visible = 0;
+
+      rows.forEach(row => {
+          const company = row.getAttribute('data-company');
+          const role = row.getAttribute('data-role');
+          const rowStatus = row.getAttribute('data-status');
+
+          const matchesSearch = company.includes(search) || role.includes(search);
+          const matchesStatus = status === 'All' || rowStatus === status;
+
+          if (matchesSearch && matchesStatus) {
+              row.style.display = '';
+              visible++;
+          } else {
+              row.style.display = 'none';
+          }
+      });
+
+      document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+      updateCounts();
+  }
+
+  function updateCounts() {
+      const rows = document.querySelectorAll('.job-row');
+      let total = 0, applied = 0, interview = 0, offer = 0, rejected = 0;
+
+      rows.forEach(row => {
+          if (row.style.display !== 'none') {
+              total++;
+              const s = row.getAttribute('data-status');
+              if (s === 'Applied') applied++;
+              else if (s === 'Interview') interview++;
+              else if (s === 'Offer') offer++;
+              else if (s === 'Rejected') rejected++;
+          }
+      });
+
+      document.getElementById('totalCount').textContent = total;
+      document.getElementById('appliedCount').textContent = applied;
+      document.getElementById('interviewCount').textContent = interview;
+      document.getElementById('offerCount').textContent = offer;
+      document.getElementById('rejectedCount').textContent = rejected;
+  }
+
+  function clearFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('statusFilter').value = 'All';
+      filterJobs();
+  }
+
+  // ── event listeners ──
+  document.getElementById('searchInput').addEventListener('input', filterJobs);
+  document.getElementById('statusFilter').addEventListener('change', filterJobs);
+
+  // ── run on load to set counts ──
+  updateCounts();
+</script>
