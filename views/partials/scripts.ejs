@@ -1,0 +1,23 @@
+<script 
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous">
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const updateModal = document.getElementById('updateModal');
+    
+      if (!updateModal) return; 
+    
+      updateModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+    
+        const jobId = button.getAttribute('data-id');
+        const status = button.getAttribute('data-status');
+    
+        document.getElementById('jobId').value = jobId;
+        document.getElementById('jobStatus').value = status;
+      });
+    });
+</script>

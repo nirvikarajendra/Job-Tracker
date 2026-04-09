@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("partials/head") %>
+    <title>Dashboard</title>
+</head>
+<body>
+    <div class="container mt-5">
+
+        <!-- Welcome Section -->
+        <div class="d-flex align-items-center mb-4">
+            <h1 class="me-3">Welcome, <%= user.username %>!</h1>
+            <% if(user.avatar) { %>
+                <img src="<%= user.avatar %>" width="80" class="rounded-circle">
+            <% } %>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mb-4 d-flex gap-2">
+            <!-- Add Job Button -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#jobModal">
+                Add Job
+            </button>
+
+            <!-- Logout Button -->
+            <a href="/auth/logout" class="btn btn-dark">Logout</a>
+        </div>
+
+        <!-- Jobs Table -->
+        <h2 class="mb-3">My Jobs</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Company</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Repo</th>
+                        <th>Link</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(jobs.length === 0) { %>
+                        <tr>
+                            <td colspan="5" class="text-center">No jobs added yet.</td>
+                        </tr>
+                    <% } else { %>
+                        <% jobs.forEach(job => { %>
+                            <tr>
+                                <td><%= job.company %></td>
+                                <td><%= job.role %></td>
+                                <td><%= job.status %></td>
+                                <td>
+                                    <% if(job.repoId) { %>
+                                        <a href="<%= job.repoId.htmlUrl %>" target="_blank"><%= job.repoId.name %></a>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if(job.jobLink) { %>
+                                        <a href="<%= job.jobLink %>" target="_blank">Apply Link</a>
+                                    <% } %>
+                                </td>
+                                <td>
+                                  <button 
+                                      class="btn btn-sm btn-warning"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#updateModal"
+                                      data-id="<%= job._id %>"
+                                      data-status="<%= job.status %>">
+                                      Edit
+                                  </button>
+                              </td>
+                            </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Add Job Modal -->
+        <div class="modal fade" id="jobModal" tabindex="-1" aria-labelledby="jobModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="jobModalLabel">Add Job Application</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="/repo/job/create">
+
+                            <div class="mb-3">
+                                <label for="Company" class="form-label">Company</label>
+                                <input type="text" class="form-control" id="Company" name="company" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Role" class="form-label">Role</label>
+                                <input type="text" class="form-control" id="Role" name="role" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Location" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="Location" name="location">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="jobLink" class="form-label">Job Link</label>
+                                <input type="text" class="form-control" id="jobLink" name="jobLink">
+                            </div>
+
+                            <div class="mb-3">
+                              <label for="status" class="form-label">Status</label>
+                              <select class="form-control" id="status" name="status">
+                                  <option value="Applied">Applied</option>
+                                  <option value="Interview">Interview</option>
+                                  <option value="Rejected">Rejected</option>
+                                  <option value="Offer">Offer</option>
+                              </select>
+                          </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Applied Date</label>
+                                <input type="date" name="appliedDate" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Select GitHub Repo</label>
+                                <select name="repoId" class="form-select" required>
+                                    <% repos.forEach(repo => { %>
+                                        <option value="<%= repo.id %>"><%= repo.name %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!--Update Model-->
+    <div class="modal fade" id="updateModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form method="POST" action="/repo/job/update">
+            <div class="modal-header">
+              <h5 class="modal-title">Update Status</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+    
+            <div class="modal-body">
+              <input type="hidden" name="jobId" id="jobId">
+    
+              <label class="form-label">Status</label>
+              <select name="status" id="jobStatus" class="form-select">
+                <option>Applied</option>
+                <option>Interview</option>
+                <option>Rejected</option>
+                <option>Offer</option>
+              </select>
+            </div>
+    
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-success">Update</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <%- include("partials/scripts") %>
+</body>
+</html>

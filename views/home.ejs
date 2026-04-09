@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Job Tracker</title>
+  <%- include("partials/head") %>
+  <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h3">JOB TRACKER</span>
+    </div>
+  </nav>
+</head>
+<body>
+
+  <div class="vh-100 d-flex justify-content-center align-items-center text-center">
+    <div class="position-relative" style="top: -50px;">
+      <h1>Welcome to Job Tracker</h1>
+      <p>Track your job applications using your GitHub repositories</p>
+      <a href="/auth/github">
+        <button class="btn btn-dark btn-lg">Login with GitHub</button>
+      </a>
+    </div>
+  </div>
+
+  <%- include("partials/scripts") %>
+</body>
+</html>
