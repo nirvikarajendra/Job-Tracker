@@ -7,10 +7,13 @@ Authenticate with GitHub OAuth and manage your job search in one place.
 
 ## Features
 
-- GitHub OAuth login — no passwords needed
-- Add, edit, and delete job applications
-- Track status (Applied, Interview, Offer, Rejected)
-- Clean dashboard view of all applications
+- GitHub OAuth login
+- Add and edit job applications
+- Filter by application status
+- Search by company or role
+- Color coded status badges
+- Live stats bar showing counts per status
+- Deployed on Render
 
 ## Tech Stack
 
