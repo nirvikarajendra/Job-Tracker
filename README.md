@@ -5,7 +5,7 @@ Authenticate with GitHub OAuth and manage your job search in one place.
 
 🔗 **Live Demo:** https://job-tracker-gpop.onrender.com/
 
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](dashboard.png)
 
 ## Features
 
